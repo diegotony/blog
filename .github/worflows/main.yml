@@ -1,0 +1,11 @@
+name: Hugo Deploy
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  hugo:
+    uses: diegotony/gh-pipelines/.github/workflows/hugo.yml@main
