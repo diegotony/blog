@@ -7,6 +7,8 @@ on:
 
 jobs:
   hugo:
-    uses: diegotony/gh-pipelines/.github/workflows/hugo.yml@main
+    uses: diegotony/gh-pipelines/.github/workflows/hugo-custom-domain.yml@main
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    with:
+      CUSTOM_DOMAIN: blog.constant1n396.com
