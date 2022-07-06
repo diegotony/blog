@@ -1,4 +1,4 @@
-baseurl = "https://diegotony.github.io/blog"
+baseurl = "blog.constant1n396.com"
 languageCode = "en-us"
 theme = "terminal"
 paginate = 5
