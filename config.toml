@@ -1,5 +1,5 @@
-baseURL = ''
-# baseURL = 'https://diegotony.github.io/blog.constant1n396.com/'
+# baseURL = ''
+baseURL = 'https://diegotony.github.io/blog.constant1n396.com/'
 languageCode = 'en-us'
 title = 'blog.constant1n396.com'
 # theme = "solar-theme-hugo"
