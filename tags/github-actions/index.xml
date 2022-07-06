@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>github-actions on blog</title><link>/tags/github-actions/</link><description>Recent content in github-actions on blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 06 Jul 2022 16:51:04 -0500</lastBuildDate><atom:link href="/tags/github-actions/index.xml" rel="self" type="application/rss+xml"/><item><title>Github Actions Part One</title><link>/posts/github-actions-part-one/</link><pubDate>Wed, 06 Jul 2022 16:51:04 -0500</pubDate><guid>/posts/github-actions-part-one/</guid><description>GitHub Actions es un PaaS, perteneciente a Github, es una plataforma que nos permite automatizar algunas procesos para nuestro codigo, como por ejemplo:
+Pruebas Unitarias (test) Construcion (build) Despliegue (deploy) Documentacion (docs) Enviar un mensaje a Slack (webhook) Existen algunas cosas mas, pero esto es para lo que se ocupa actualemente. A continuacion te presento los actions:
+upload-artifact Repositorio
+Si has ocupado GitLab CI sabes existe una manera de pasar artefactos de un job a otro, este action es la traduccion de eso, digamos que se requiere que pases el build de tu aplicacion a otro job por lo que este accion te facilita eso, OJO , este solo sube, necesitas de otro accion para descargarlo, mas adelante te lo presentare.</description><content>&lt;p>GitHub Actions es un PaaS, perteneciente a Github, es una plataforma que nos permite automatizar algunas procesos para nuestro codigo, como por ejemplo:&lt;/p>
+&lt;ul>
+&lt;li>Pruebas Unitarias (test)&lt;/li>
+&lt;li>Construcion (build)&lt;/li>
+&lt;li>Despliegue (deploy)&lt;/li>
+&lt;li>Documentacion (docs)&lt;/li>
+&lt;li>Enviar un mensaje a Slack (webhook)&lt;/li>
+&lt;/ul>
+&lt;p>Existen algunas cosas mas, pero esto es para lo que se ocupa actualemente. A continuacion te presento los actions:&lt;/p>
+&lt;h2 id="upload-artifact">upload-artifact&lt;/h2>
+&lt;p>&lt;a href="https://github.com/actions/upload-artifact">Repositorio&lt;/a>&lt;/p>
+&lt;p>Si has ocupado GitLab CI sabes existe una manera de pasar artefactos de un job a otro, este action es la traduccion de eso, digamos que se requiere que pases el build de tu aplicacion a otro job por lo que este accion te facilita eso, &lt;strong>OJO&lt;/strong> , este solo sube, necesitas de otro accion para descargarlo, mas adelante te lo presentare. Aqui te presento como se veria en un job:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Create a file&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">run&lt;/span>: &lt;span style="color:#ae81ff">echo &amp;#34;I won&amp;#39;t live long&amp;#34; &amp;gt; my_file.txt&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Upload Artifact&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">actions/upload-artifact@v3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">with&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-artifact&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">path&lt;/span>: &lt;span style="color:#ae81ff">my_file.txt&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">retention-days&lt;/span>: &lt;span style="color:#ae81ff">5&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Algunas consideraciones antes de usar este job:&lt;/p>
+&lt;ul>
+&lt;li>Puedes subir tanto carpetas como archivos&lt;/li>
+&lt;li>Puedes establecer un tiempo de existencia para el artefacto este disponible&lt;/li>
+&lt;li>En caso que lo quieras usar en otro job, debes de referirte a el por el nombre que pusiste en el parametro de &lt;strong>name&lt;/strong> como en este caso es &lt;code>my_file.txt&lt;/code>.&lt;/li>
+&lt;/ul>
+&lt;h2 id="download-artifact">download-artifact&lt;/h2>
+&lt;p>&lt;a href="https://github.com/actions/download-artifact">Repositorio&lt;/a>&lt;/p>
+&lt;p>Bueno como ya te lo mencione en el action anterior, este job nos ayuda a recuperar los artefactos que subimos con el action anterior, es muy sencillo se lo hace de la siguiente manera:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>- &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">actions/checkout@v2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">actions/download-artifact@v3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">with&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-artifact&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>No hay consideraciones para este job&lt;/p></content></item></channel></rss>
