@@ -5,3 +5,4 @@ title = 'blog.constant1n396.com'
 theme = "color-your-world"
 publishDir = "docs"
 paginate = "10"
+
