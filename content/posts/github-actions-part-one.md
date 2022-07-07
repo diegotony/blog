@@ -1,10 +1,10 @@
 +++
-title = "Github Actions Part One"
+title = "Github Actions - Actions Favoritos Parte 1"
 date = "2022-07-06T16:51:04-05:00"
 author = "diegotony"
 cover = ""
 tags = ["github-actions"]
-keywords = ["github-actions", ""]
+keywords = ["upload-artifact", "download-artifact"]
 description = "GitHub Actions es un PaaS, perteneciente a Github, es una plataforma que nos permite automatizar algunas procesos para nuestro codigo"
 showFullContent = false
 readingTime = false
