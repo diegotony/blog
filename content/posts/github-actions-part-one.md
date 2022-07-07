@@ -1,5 +1,5 @@
 +++
-title = "Github Actions - Actions Favoritos Parte 1"
+title = "Mis Actions Favoritos Parte 1"
 date = "2022-07-06T16:51:04-05:00"
 author = "diegotony"
 cover = ""
