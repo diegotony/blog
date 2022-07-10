@@ -9,7 +9,7 @@ description = "AWS Cloudfront es un servicio para servir contenido estatico o ta
 showFullContent = false
 readingTime = false
 hideComments = false
-draft: true
+draft = false
 +++
 AWS Cloudfront es un servicio para servir contenido estatico o tambien llamado CDN, que resulta muy util cuando se desea deployar una pagina web bajo demanda con un bajo costo. A continuacion les presento un pipeline para deployar a AWS Cloudfront Usando Github Actions.
 
@@ -18,7 +18,7 @@ Que debe hacer nuestro pipeline:
 0. Configuraciones generales del job
 1. Check de nuestro codigo
 2. Build de nuestra aplicacion
-3. Setup de las credenciales de AWS
+3. Setup del Role de AWS
 4. Sync del contenido a nuestro bucket de S3
 5. Crear una Invalidation
 6. DONE
@@ -76,28 +76,56 @@ Se hace un build de la aplicacion, varia mucho del framework, lo que se usa para
       run: |
         npm run build --if-present 
 ```
+| Algo importante es que a veces sabe dar error el el build cuando se genera los proyectos por medio de CLI's del framework, como por ejemplo angular-cli o react-cli, por lo que se necesita instalar este CLI antes de hacer el build de manera global, como por ejemplo `npm install -g @angular/cli` 
+### 3. Setup del Role de AWS
 
-### 1. Check de nuestro codigo
-Aqui lo que hace basicamente es descargar nuestro codigo al job
+Se hace la configuracion del Role de AWS para desplegar el proyecto por medio de GitHub Actions, a mi parecer es la manera mas segura, [aqui](https://github.com/aws-actions/configure-aws-credentials#assuming-a-role) te dejo como configurar el Role o en tal caso que quieras hacerlo con crendenciales presiona [aqui](https://github.com/aws-actions/configure-aws-credentials).
 ```yaml
-    - name: Check out code  
-      uses: actions/checkout@v2
+    - name: Configure AWS Role
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.AWS_ACCESS_ROLE }}
+        role-session-name: github-action-job
+        role-duration-seconds: 900
+        aws-region: us-east-1
 ```
-### 1. Check de nuestro codigo
-Aqui lo que hace basicamente es descargar nuestro codigo al job
+Algo importante a mencionar es que si usaste la configuracion con el Role, debes agregar el ARN del Roles en los SECRETS de GitHub Actions, dentro del step debes de poner este bloque.
 ```yaml
-    - name: Check out code  
-      uses: actions/checkout@v2
+    permissions:
+      id-token: write
+      contents: read
 ```
-### 1. Check de nuestro codigo
-Aqui lo que hace basicamente es descargar nuestro codigo al job
+
+Finalmente se veria asi
 ```yaml
-    - name: Check out code  
-      uses: actions/checkout@v2
+    - name: Configure AWS Role
+      uses: aws-actions/configure-aws-credentials@v1
+      permissions:
+        id-token: write
+        contents: read
+      with:
+        role-to-assume: ${{ secrets.AWS_ACCESS_ROLE }}
+        role-session-name: github-action-job
+        role-duration-seconds: 900
+        aws-region: us-east-1
 ```
-### 1. Check de nuestro codigo
-Aqui lo que hace basicamente es descargar nuestro codigo al job
+
+### 4. Sync del contenido a nuestro bucket de S3
+
+Ahora se sube el build dentro del bucket de S3, para eso se necesita el URL del Bucket, por lo que el url se veria mas o menos asi `s3://my-source-bucket`, algo mas para agregar es que en la etapa de build, no necesariamente siempre va a generar el el diretorio `build/` como resultado del el build, en alguno casos tambien se same llamar `dist/` o `out/`, por lo que te recomiendo correr en local el comando para que sepas que directorio vas a subir. Te recomiendo poner el nombre de bucket en los SECRETS de GitHub Actions.  
 ```yaml
-    - name: Check out code  
-      uses: actions/checkout@v2
+    - name: Sync S3 Bucket
+      run: |
+        echo "Save in S3 Bucket"
+        aws s3 sync public $AWS_S3_BUCKET
 ```
+### 5. Crear una Invalidation
+Y por ultimo se procede a invalidar la version subida en **Cloudfront**, *Por que es necesario esto?*  Ya que cada vez que se despliega una version nueva de la pagina web, Cloudfront lo guarda en cache dentro de su servicio, para optimizar la cargar del sitio, por lo que se necesita decirle que tome la nueva version en el bucket, por lo que se invalida la que previamente fue subida, y se valida la actual, para esto se necesita el ID del Cloudfront.
+```yaml
+    - name: Deploy Invalidation 
+      run: |
+        echo "Deploy to Cloudfront"
+        aws cloudfront create-invalidation --paths /* --distribution-id $AWS_DISTRIBUTION_ID
+```
+
+En caso que estes familiarizado con los Reusable Jobs en Github puedes hecharle un ojo a este [job](https://github.com/diegotony/gh-pipelines/blob/main/.github/workflows/aws-cloudfront.yml).
